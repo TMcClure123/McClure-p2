@@ -1,0 +1,34 @@
+{
+    "images": [
+        {
+            "imgPath": "me-in-the-kiddie-waterpark.jpg",
+            "imgLocation": "6 Flags Water Park",
+            "description": "SplashWater Falls",
+            "date": "01/01/2016"
+        },
+        {
+            "imgPath": "casino-pier-breakwater.jpg",
+            "imgLocation": "Casino Pier",
+            "description": "Ride Attraction",
+            "date": "01/02/2016"
+        },
+        {
+            "imgPath": "HersheyBlog_Hero_8ef7ea6302ebfbef14fae837bb7b9c7d.jpg",
+            "imgLocation": "Hershey Park",
+            "description": "Waterpark overview",
+            "date": "01/03/2016"
+        },
+        {
+            "imgPath": "imm3jirbdsp2tljshjbg.jpg",
+            "imgLocation": "Disney Land",
+            "description": "Outside the Magic Castle",
+            "date": "01/04/2016"
+        },
+        {
+            "imgPath": "download.jpg",
+            "imgLocation": "Lego Land",
+            "description": "Built Brick by Brick",
+            "date": "01/05/2016"
+        }
+    ]
+}

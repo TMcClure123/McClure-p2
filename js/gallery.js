@@ -1,20 +1,22 @@
-// requestAnim shim layer by Paul Irish
 window.requestAnimFrame = (function () {
-  return (
-    window.requestAnimationFrame ||
+  return window.requestAnimationFrame ||
     window.webkitRequestAnimationFrame ||
     window.mozRequestAnimationFrame ||
     window.oRequestAnimationFrame ||
     window.msRequestAnimationFrame ||
     function (/* function */ callback, /* DOMElement */ element) {
       window.setTimeout(callback, 1000 / 60);
-    }
-  );
+    };
 })();
+
+
+
 
 // example code from mr doob : http://mrdoob.com/lab/javascript/requestanimationframe/
 
+
 animate();
+
 
 var mLastFrameTime = 0;
 var mWaitTime = 5000; //time in ms
@@ -25,55 +27,72 @@ function animate() {
     mLastFrameTime = currentTime;
   }
 
-  if (currentTime - mLastFrameTime > mWaitTime) {
+
+  if ((currentTime - mLastFrameTime) > mWaitTime) {
     swapPhoto();
     mLastFrameTime = currentTime;
   }
 }
 
+
 /************* DO NOT TOUCH CODE ABOVE THIS LINE ***************/
 
+
 function swapPhoto() {
-  //Add code here to access the #slideShow element.
+  // Increment the current index
+
+
+  // Check if the current index is greater than or equal to the length of mImages
   if (mCurrentIndex >= mImages.length) {
+    // Set the current index back to 0
     mCurrentIndex = 0;
   }
-
+  // Check if the current index is less than 0
   if (mCurrentIndex < 0) {
+    // Set the current index to the last image in the array mImages
     mCurrentIndex = mImages.length - 1;
   }
-  document.getElementById("photo").src = mImages[mCurrentIndex].imgPath;
-  //Access the img element and replace its source
-  let location = document.getElementsByClassName("location")[0];
-  let description = document.getElementsByClassName("description")[0];
-  let date = document.getElementsByClassName("date")[0];
-  //with a new image from your images array which is loaded
-  location.innerHTML = "Location: " + mImages[mCurrentIndex].location;
-  description.innerHTML = "Description: " + mImages[mCurrentIndex].description;
-  date.innerHTML = "Date: " + mImages[mCurrentIndex].date;
-  //from the JSON string
-
-  mLastFrameTime = 0;
+  // Access the 'photo' element in the HTML document
+  var photoElement = document.getElementById('photo');
+  // Set the src attribute of the 'photo' element to the corresponding value from the mImages array
+  photoElement.src = mImages[mCurrentIndex].img;
+  var locationElement = document.getElementsByClassName('location')[0];
+  var descriptionElement = document.getElementsByClassName('description')[0];
+  var dateElement = document.getElementsByClassName('date')[0];
+  // Set innerHTML for location, description, and date
+  locationElement.innerHTML = "Location: " + mImages[mCurrentIndex].location;
+  descriptionElement.innerHTML = "Description: " + mImages[mCurrentIndex].description;
+  dateElement.innerHTML = "Date: " + mImages[mCurrentIndex].date;
+  // Set the variable mLastFrameTime to zero
+  var mLastFrameTime = 0;
+  // Increase the current index number by 1 using the += operator
   mCurrentIndex += 1;
-  console.log("swap photo");
+  console.log('swap photo');
 }
 
 
 // Counter for the mImages array
 var mCurrentIndex = 0;
 
+
 // XMLHttpRequest variable
 var mRequest = new XMLHttpRequest();
+
 
 // Array holding GalleryImage objects (see below).
 var mImages = [];
 
+
 // Holds the retrived JSON information
 var mJson;
 
+
 // URL for the JSON to load by default
 // Some options for you are: images.json, images.short.json; you will need to create your own extra.json later
-var mUrl = "more.json";
+var mUrl = 'extra.json';
+
+
+
 
 //You can optionally use the following function as your event callback for loading the source of Images from your json data (for HTMLImageObject).
 //@param A GalleryImage object. Use this method for an event handler for loading a gallery Image object (optional).
@@ -81,94 +100,124 @@ function makeGalleryImageOnloadCallback(galleryImage) {
   return function (e) {
     galleryImage.img = e.target;
     mImages.push(galleryImage);
-  };
+  }
 }
 
+
 $(document).ready(function () {
-  // This initially hides the photos' metadata information
-  //$(".details").eq(0).hide();
+
+
+  // Call the fetchJSON function
   fetchJSON();
+
+
+  // This initially hides the photos' metadata information
+  // $('.details').eq(0).hide();
+
+
 });
 
-window.addEventListener(
-  "load",
-  function () {
-    console.log("window loaded");
-  },
-  false
-);
 
-function GalleryImage() {
+window.addEventListener('load', function () {
+
+
+  console.log('window loaded');
+
+
+}, false);
+
+
+function galleryImage() {
   //implement me as an object to hold the following data about an image:
   //1. location where photo was taken
   var location;
   //2. description of photo
   var description;
-  //3. the date when the photo was taken
+  //3. the date when the photo was taken  
   var date;
   //4. either a String (src URL) or an an HTMLImageObject (bitmap of the photo. https://developer.mozilla.org/en-US/docs/Web/API/HTMLImageElement)
   var img;
 }
-$(document).ready(function(){
-  // Click handler for img.moreIndicator
-  $('img.moreIndicator').click(function(){
-    let $indicator = $(this);
-    let $details = $('.details');
-    // Toggle rotation classes
-    if ($indicator.hasClass('rot90')) {
-      $indicator.removeClass('rot90').addClass('rot270');
+
+
+
+
+
+
+
+
+
+
+
+
+function fetchJSON() {
+  mRequest.onreadystatechange = function () {
+    if (this.readyState == 4 && this.status == 200) {
+      var mJson = JSON.parse(mRequest.responseText);
+      console.log(mJson)
+      iterateJSON(mJson)
     } else {
-      $indicator.removeClass('rot270').addClass('rot90');
+      console.log("We connected to the server but an error occurred")
     }
-    // Slide down/up details div
-    $details.slideToggle();
-  });
+  }
+  mRequest.open("GET", mUrl)
+  mRequest.send()
 
 
-  // Offset #nextPhoto to the right side of #nav div
-  $('#nextPhoto').position({
-    my: 'right',
-    at: 'right',
-    of: '#nav'
-  });
+ 
+};
 
 
-  // Click handler for navigating to the next photo
-  $('#nextPhoto').click(function() {
-   swapPhoto()
-  });
+function iterateJSON(mJson) {
+  for (var x = 0; x < mJson.images.length; x++) {
+    mImages[x] = new galleryImage();
+    mImages[x].location = mJson.images[x].imgLocation;
+    mImages[x].description = mJson.images[x].description;
+    mImages[x].date = mJson.images[x].date;
+    mImages[x].img = mJson.images[x].imgPath;
+  }
+}
 
 
-  // Click handler for navigating to the previous photo
-  $('#prevPhoto').click(function() {
-    mCurrentIndex =  mCurrentIndex -2;  
-    swapPhoto()
-  });
+
+$(document).ready(function () {
+  // This initially hides the photos' metadata information
+  //$(".details").eq(0).hide();
+
+
+$(".moreIndicator").on("click", function () {
+  if ($(".moreIndicator").hasClass("rot90")){
+    $(".moreIndicator").removeClass('rot90').addClass("rot270")
+  } else{
+    $(".moreIndicator").removeClass("rot270").addClass("rot90")
+  }
+
+
+  $('.details').slideToggle();
+ 
 });
 
 
 
-function fetchJSON(mJson) {
-    mRequest.onreadystatechange = function () {
-      if (this.readyState == 4 && this.status == 200) {
-        var mJson = JSON.parse(mRequest.responseText);
-        console.log(mJson);
-        iterateJSON(mJson);
-      } else {
-        console.log("We connected to the server but returned an error");
-      }
-    };
-    mRequest.open('GET', mUrl);
-    mRequest.send();
-  }
 
-  //iterate JSON function
-function iterateJSON(mJson) {
-    for (let x = 0; x < mJson.images.length; x++) {
-      mImages[x] = new GalleryImage();
-      mImages[x].location = mJson.images[x].imgLocation;
-      mImages[x].description = mJson.images[x].description;
-      mImages[x].date = mJson.images[x].date;
-      mImages[x].imgPath = mJson.images[x].imgPath;
-    }
-  }
+
+
+$('#nextPhoto').position({  
+  my: 'right',
+  at: 'right',
+  of: '#nav'
+});
+
+
+// Click handler for navigating to the next photo
+$("#nextPhoto").on("click", function () {
+  mCurrentIndex++
+  swapPhoto()
+});
+
+
+$("#prevPhoto").on("click", function () {
+    mCurrentIndex = mCurrentIndex - 2;
+    swapPhoto()
+  });
+});
